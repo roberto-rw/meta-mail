@@ -1,0 +1,727 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package interfazUsuario;
+
+import control.Control;
+import control.Tabla;
+import java.applet.Applet;
+import java.awt.Color;
+import java.awt.Image;
+import static java.awt.SystemColor.control;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.URISyntaxException;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
+import javax.swing.text.TableView.TableRow;
+import objetosNegocio.*;
+
+/**
+ *
+ * @author user
+ */
+public class FrmEmail extends javax.swing.JFrame{
+    String nomUsuario;
+    String ipUsuario;
+    String correoUsuario;
+    private String rBinary = "Archivo/id.dat";
+    private String rUsers = "Archivo/contactos.dat";
+    private String rMails = "Archivo/correos.dat";
+    private Control control = new Control(this);
+    private JLabel tituloTabla;
+    private JScrollPane jScrollPane1;
+    private JTable tablaCorreos, tablaUsuarios;
+
+    String I = null;
+    String U = null;
+    
+    /**
+     * Creates new form FrmEmail
+     */
+    public FrmEmail(String nomUsuario,String ipUsuario, String correoUsuario) {
+        initComponents();
+        this.nomUsuario = nomUsuario;
+        this.ipUsuario = ipUsuario;
+        this.correoUsuario = correoUsuario;
+        this.nombreUsuario.setText(nomUsuario);
+        this.correoU.setText(correoUsuario);
+   
+        control.setMyUsr(new Usuario(nomUsuario,correoUsuario,ipUsuario));
+        
+        comboPerfil.addItem("Yoru");
+        comboPerfil.addItem("Skye");
+        comboPerfil.addItem("Reyna");
+        comboPerfil.addItem("Chamber");
+        comboPerfil.addItem("Nueva foto...");
+
+        Image iconoPropio = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/recursos/etc/mlogo.png"));
+        setIconImage(iconoPropio);
+
+        try {
+            RandomAccessFile aBinario = new RandomAccessFile(rBinary, "r");
+            int write;
+            long size = ((aBinario.length()/4)-1);
+            
+            aBinario.seek(size*4);
+            write = aBinario.readInt();
+            System.out.println(write);
+            aBinario.seek(size*4);
+            if(write > 0){
+                control.setID(write);
+            }
+            aBinario.close();
+        }catch(Exception e){}
+            
+        
+        ObjectInputStream objetoEntrada = null;
+        try{
+            FileInputStream ficheroEntrada = new FileInputStream(rUsers);
+            objetoEntrada = new ObjectInputStream(ficheroEntrada);
+
+            while(true){
+                Usuario u = (Usuario)objetoEntrada.readObject();
+                try{
+                    control.añadirUsuarioBinario(u);
+                }catch(Exception e){
+                    break;
+                }
+            }
+            
+        }
+        catch(Exception e){}
+
+        
+        ObjectInputStream objetoEntrada2 = null;
+        try{
+            FileInputStream ficheroEntrada2 = new FileInputStream(rMails);
+            objetoEntrada2 = new ObjectInputStream(ficheroEntrada2);
+            while(true){
+                try{
+                    Correo c = (Correo) objetoEntrada2.readObject(); 
+                    control.añadirCorreoBinario(c); 
+                }
+                catch(Exception e){
+                    break;
+                }
+            }
+        }catch(Exception e){}
+        
+        if(objetoEntrada != null && objetoEntrada2 != null){
+            try {
+                objetoEntrada.close();
+                objetoEntrada2.close();
+            } catch (IOException ex) {}
+        }
+        
+        
+        Tabla tabla = control.getTablaCorreos();
+        despliegaTablaCorreos(tabla);
+        
+        Tabla tabla2 = control.getTablaUsuarios();
+        despliegaTablaUsuarios(tabla2);
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        botonNuevo = new javax.swing.JButton();
+        botonAbrir = new javax.swing.JButton();
+        botonGuardar = new javax.swing.JButton();
+        botonEliminar = new javax.swing.JButton();
+        botonBuscar = new javax.swing.JButton();
+        botonInicio = new javax.swing.JButton();
+        botonCerrarSesion = new javax.swing.JButton();
+        campoBuscar = new javax.swing.JTextField();
+        comboPerfil = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        bandejaEntrada = new javax.swing.JScrollPane();
+        panelContactos = new javax.swing.JScrollPane();
+        nombreUsuario = new javax.swing.JLabel();
+        correoU = new javax.swing.JLabel();
+        fotoPerfil = new javax.swing.JLabel();
+        ad = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        fondo = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("MetaMail");
+        setResizable(false);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
+        addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                formKeyPressed(evt);
+            }
+        });
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        botonNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/botones/nuevo.png"))); // NOI18N
+        botonNuevo.setBorderPainted(false);
+        botonNuevo.setContentAreaFilled(false);
+        botonNuevo.setDefaultCapable(false);
+        botonNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonNuevoActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 160, 120, 40));
+
+        botonAbrir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/botones/abrir.png"))); // NOI18N
+        botonAbrir.setBorder(null);
+        botonAbrir.setBorderPainted(false);
+        botonAbrir.setContentAreaFilled(false);
+        botonAbrir.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonAbrirActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonAbrir, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 240, 120, 40));
+
+        botonGuardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/botones/guardar.png"))); // NOI18N
+        botonGuardar.setBorder(null);
+        botonGuardar.setBorderPainted(false);
+        botonGuardar.setContentAreaFilled(false);
+        botonGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonGuardarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 290, 120, 40));
+
+        botonEliminar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/botones/eliminar.png"))); // NOI18N
+        botonEliminar.setBorder(null);
+        botonEliminar.setBorderPainted(false);
+        botonEliminar.setContentAreaFilled(false);
+        botonEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonEliminarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 340, 120, 40));
+
+        botonBuscar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/botones/buscar2.png"))); // NOI18N
+        botonBuscar.setText("Buscar");
+        botonBuscar.setBorderPainted(false);
+        botonBuscar.setContentAreaFilled(false);
+        botonBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonBuscarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(952, 472, 100, 30));
+
+        botonInicio.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/etc/mlogo2.png"))); // NOI18N
+        botonInicio.setBorder(null);
+        botonInicio.setBorderPainted(false);
+        botonInicio.setContentAreaFilled(false);
+        botonInicio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonInicioActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 170, 80));
+
+        botonCerrarSesion.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/botones/cSesion2.png"))); // NOI18N
+        botonCerrarSesion.setToolTipText("");
+        botonCerrarSesion.setBorder(null);
+        botonCerrarSesion.setBorderPainted(false);
+        botonCerrarSesion.setContentAreaFilled(false);
+        botonCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonCerrarSesionActionPerformed(evt);
+            }
+        });
+        getContentPane().add(botonCerrarSesion, new org.netbeans.lib.awtextra.AbsoluteConstraints(990, 50, 80, 30));
+
+        campoBuscar.setBackground(new java.awt.Color(0, 102, 204));
+        campoBuscar.setForeground(new java.awt.Color(255, 255, 255));
+        campoBuscar.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        campoBuscar.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        campoBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                campoBuscarActionPerformed(evt);
+            }
+        });
+        getContentPane().add(campoBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(750, 475, 200, -1));
+
+        comboPerfil.setBackground(new java.awt.Color(0, 19, 39));
+        comboPerfil.setFont(new java.awt.Font("Tw Cen MT", 0, 12)); // NOI18N
+        comboPerfil.setForeground(new java.awt.Color(255, 255, 255));
+        comboPerfil.setToolTipText("");
+        comboPerfil.setBorder(null);
+        comboPerfil.setDoubleBuffered(true);
+        comboPerfil.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                comboPerfilActionPerformed(evt);
+            }
+        });
+        getContentPane().add(comboPerfil, new org.netbeans.lib.awtextra.AbsoluteConstraints(903, 100, 80, 20));
+
+        jLabel1.setFont(new java.awt.Font("Tw Cen MT", 3, 14)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Bandeja de entrada");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 130, -1, 20));
+
+        jLabel2.setFont(new java.awt.Font("Tw Cen MT", 3, 14)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Contactos");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 410, -1, -1));
+
+        bandejaEntrada.setBorder(null);
+        bandejaEntrada.setForeground(new java.awt.Color(0, 0, 0));
+        bandejaEntrada.setToolTipText("");
+        bandejaEntrada.setOpaque(false);
+        bandejaEntrada.getViewport().setOpaque(false);
+        getContentPane().add(bandejaEntrada, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, 790, 340));
+
+        panelContactos.setBorder(null);
+        panelContactos.setOpaque(false);
+        panelContactos.getViewport().setOpaque(false);
+        getContentPane().add(panelContactos, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 430, 150, 190));
+
+        nombreUsuario.setFont(new java.awt.Font("Tw Cen MT", 1, 12)); // NOI18N
+        nombreUsuario.setForeground(new java.awt.Color(255, 255, 255));
+        nombreUsuario.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        getContentPane().add(nombreUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(790, 40, 100, 20));
+
+        correoU.setFont(new java.awt.Font("Tw Cen MT", 1, 12)); // NOI18N
+        correoU.setForeground(new java.awt.Color(255, 255, 255));
+        correoU.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        getContentPane().add(correoU, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 70, 130, 20));
+
+        fotoPerfil.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/perfil/perfil1.png"))); // NOI18N
+        fotoPerfil.setVerticalTextPosition(javax.swing.SwingConstants.TOP);
+        getContentPane().add(fotoPerfil, new org.netbeans.lib.awtextra.AbsoluteConstraints(900, 20, 86, 86));
+
+        ad.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/etc/add.png"))); // NOI18N
+        ad.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                adMouseClicked(evt);
+            }
+        });
+        getContentPane().add(ad, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 510, 680, 120));
+
+        jSeparator1.setForeground(new java.awt.Color(0, 102, 204));
+        jSeparator1.setToolTipText("");
+        getContentPane().add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 220, 120, 10));
+
+        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/recursos/fondos/fondo.png"))); // NOI18N
+        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1080, 640));
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void botonNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonNuevoActionPerformed
+        int u = tablaUsuarios.getSelectedRow();
+        if(u >= 0){
+            U = tablaUsuarios.getValueAt(u,1).toString(); 
+            try {
+                control.enviarCorreo(this,this.nomUsuario,this.ipUsuario,this.correoUsuario,1,U);
+                System.out.println("Se desplegó la tabla");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println("Algo salió mal");
+            }
+        }
+        else{
+            try {
+                control.enviarCorreo(this,this.nomUsuario,this.ipUsuario,this.correoUsuario,0,null);
+                System.out.println("Se desplegó la tabla");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println("Algo salió mal");
+            }
+        }
+        
+        Tabla tabla = control.getTablaCorreos();
+        despliegaTablaCorreos(tabla);
+        Tabla tabla2 = control.getTablaUsuarios();
+        despliegaTablaUsuarios(tabla2);
+    }//GEN-LAST:event_botonNuevoActionPerformed
+
+    private void botonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonEliminarActionPerformed
+        int i = tablaCorreos.getSelectedRow(); 
+        int u = tablaUsuarios.getSelectedRow();
+        if(i >= 0){
+            I = tablaCorreos.getValueAt(i,0).toString(); 
+            try {
+            control.eliminarCorreo(I);
+            } 
+            catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println("Algo salió mal");
+            }
+
+            Tabla tabla = control.getTablaCorreos();
+            despliegaTablaCorreos(tabla);
+        }
+        else if(u >= 0){
+            U = tablaUsuarios.getValueAt(u,1).toString(); 
+
+            if(JOptionPane.showOptionDialog(null, "¿Quieres eliminar el contacto?", "Eliminar contacto", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Siwe siwe","Nowe nowe"}, "Eliminar")==0){
+                try {
+                control.eliminarUsuario(U);
+                } 
+                catch (Exception ex) {
+                    ex.printStackTrace();
+                    System.out.println("Algo salió mal");
+                }
+                
+                Tabla tabla2 = control.getTablaUsuarios();
+                despliegaTablaUsuarios(tabla2);
+            }
+        }
+        
+        System.out.println("Eliminar");
+    }//GEN-LAST:event_botonEliminarActionPerformed
+
+    private void botonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonGuardarActionPerformed
+        int i = tablaCorreos.getSelectedRow();
+        if(i >= 0){
+            I = tablaCorreos.getValueAt(i,0).toString(); 
+            
+            try {
+                control.guardarCorreo(I);
+            } 
+            catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println("Algo salió mal");
+            }
+
+            Tabla tabla = control.getTablaCorreos();
+            despliegaTablaCorreos(tabla);
+
+        }
+        System.out.println("Guardar");
+    }//GEN-LAST:event_botonGuardarActionPerformed
+
+    private void adMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_adMouseClicked
+        if(java.awt.Desktop.isDesktopSupported()){
+            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
+            
+            if(desktop.isSupported(java.awt.Desktop.Action.BROWSE)){
+                try{
+                    java.net.URI uri = new java.net.URI("https://mariscoselrey.com.mx/");
+                    desktop.browse(uri);
+                }
+                catch(URISyntaxException | IOException ex){}
+            }
+            
+        }
+    }//GEN-LAST:event_adMouseClicked
+
+    private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
+        switch(evt.getExtendedKeyCode()){
+            case KeyEvent.VK_DELETE:
+                if(tablaCorreos.getSelectedRow() != 0){
+                    int i = tablaCorreos.getSelectedRow();
+                    I = tablaCorreos.getValueAt(i,0).toString();
+
+                    try {
+                        control.eliminarCorreo(I);
+                    } 
+                    catch (Exception ex) {
+                        ex.printStackTrace();
+                        System.out.println("Algo salió mal");
+                    }
+
+                    Tabla tabla = control.getTablaCorreos();
+                    despliegaTablaCorreos(tabla);
+
+                    System.out.println("Eliminar");
+                }
+                
+            case KeyEvent.VK_ACCEPT:
+        }
+    }//GEN-LAST:event_formKeyPressed
+
+    private void botonAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAbrirActionPerformed
+        int i = tablaCorreos.getSelectedRow();
+        int u = tablaUsuarios.getSelectedRow();
+        if(i >= 0){
+           I = tablaCorreos.getValueAt(i,0).toString();
+           
+           try {
+                control.abrirCorreo(I);
+            } 
+            catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println("Algo salió mal");
+            }
+            Tabla tabla = control.getTablaCorreos();
+            despliegaTablaCorreos(tabla);
+
+            Tabla tabla2 = control.getTablaUsuarios();
+            despliegaTablaUsuarios(tabla2);
+        }
+        if(u >= 0){
+            U = tablaUsuarios.getValueAt(u,1).toString();
+            
+            try {
+                control.abrirUsuario(U);
+            } 
+            catch (Exception ex) {
+                ex.printStackTrace();
+                System.out.println("Algo salió mal");
+            }
+            Tabla tabla = control.getTablaCorreos();
+            despliegaTablaCorreos(tabla);
+
+            Tabla tabla2 = control.getTablaUsuarios();
+            despliegaTablaUsuarios(tabla2);
+        }
+
+        System.out.println("Eliminar");
+    }//GEN-LAST:event_botonAbrirActionPerformed
+
+    private void comboPerfilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboPerfilActionPerformed
+        if(comboPerfil.getSelectedItem()== "Yoru")fotoPerfil.setIcon(new ImageIcon(getClass().getResource("/recursos/perfil/perfil1.png")));
+        if(comboPerfil.getSelectedItem()== "Skye")fotoPerfil.setIcon(new ImageIcon(getClass().getResource("/recursos/perfil/perfil2.png")));
+        if(comboPerfil.getSelectedItem()== "Reyna")fotoPerfil.setIcon(new ImageIcon(getClass().getResource("/recursos/perfil/perfil3.png")));
+        if(comboPerfil.getSelectedItem()== "Chamber")fotoPerfil.setIcon(new ImageIcon(getClass().getResource("/recursos/perfil/perfil4.png")));
+        
+        if(comboPerfil.getSelectedItem()== "Nueva foto..."){
+            String nomArchivo="";
+            
+            JFileChooser fileChooser = new JFileChooser("C:Users/PC/Pictures");
+            int respuesta = fileChooser.showOpenDialog(fileChooser);
+
+            if(respuesta == JFileChooser.APPROVE_OPTION){
+                try{
+                    FileReader fr = new FileReader(fileChooser.getSelectedFile().getAbsolutePath());
+                    BufferedReader br = new BufferedReader(fr);
+                    File archivo= fileChooser.getSelectedFile();
+                    nomArchivo = archivo.getPath();
+                    System.out.println(nomArchivo);
+                }
+                catch(Exception e){}
+                
+                try{
+                    ImageIcon icon = new ImageIcon(nomArchivo);
+                    Icon icono = new ImageIcon(icon.getImage().getScaledInstance(fotoPerfil.getWidth(), fotoPerfil.getHeight(), 20));
+                    fotoPerfil.setIcon(icono);  
+                }
+                catch(Exception e){
+                    JOptionPane.showMessageDialog(null, "Error al abrir: " + e);
+                }
+            }
+        }
+    }//GEN-LAST:event_comboPerfilActionPerformed
+
+    private void botonBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonBuscarActionPerformed
+        int u = tablaUsuarios.getSelectedRow();
+        String b;
+        if(u >= 0){
+            String nom = tablaUsuarios.getValueAt(u,0).toString();
+            b = nom;
+            Tabla tabla = control.getTablaCorreosUsuario(b);
+            despliegaTablaCorreos(tabla);
+        }
+        else{
+            b = campoBuscar.getText();
+            Tabla tabla = control.getTablaCorreosUsuario(b);
+            despliegaTablaCorreos(tabla); 
+        }
+        Tabla tabla2 = control.getTablaUsuarios();
+        despliegaTablaUsuarios(tabla2);
+        System.out.println("Buscar... " + b);
+    }//GEN-LAST:event_botonBuscarActionPerformed
+
+    private void campoBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_campoBuscarActionPerformed
+        botonBuscarActionPerformed(evt);
+    }//GEN-LAST:event_campoBuscarActionPerformed
+
+    private void botonInicioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonInicioActionPerformed
+        Tabla tabla = control.getTablaCorreos();
+        despliegaTablaCorreos(tabla);
+    }//GEN-LAST:event_botonInicioActionPerformed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        try {
+            RandomAccessFile aBinario = new RandomAccessFile(rBinary, "rw");
+            int write = control.getIDCorreo();
+            aBinario.writeInt(write);       
+            aBinario.close();
+            
+            FileOutputStream ficheroSalida = new FileOutputStream(rUsers);
+            ObjectOutputStream objetoSalida = new ObjectOutputStream(ficheroSalida);
+            List<Usuario> listaUsuarios;
+            listaUsuarios = control.listaUsers();
+            
+            for(Iterator<Usuario> iterador = listaUsuarios.iterator(); iterador.hasNext(); ){
+                Usuario usuario = iterador.next();  
+                objetoSalida.writeObject(usuario);
+            }   
+            objetoSalida.close();
+            
+            FileOutputStream ficheroSalida2 = new FileOutputStream(rMails);
+            ObjectOutputStream objetoSalida2 = new ObjectOutputStream(ficheroSalida2);
+            List<Correo> listaCorreos;
+            listaCorreos = control.listaCorreos();
+            
+            for(Iterator<Correo> iterador = listaCorreos.iterator(); iterador.hasNext(); ){
+                Correo correo = iterador.next();  
+                objetoSalida2.writeObject(correo);
+            }   
+            objetoSalida2.close();
+        } 
+        catch (IOException e) {
+            System.out.println("Ha ocurrido un error al escribir el archivo binario");
+        } 
+    }//GEN-LAST:event_formWindowClosing
+
+    private void botonCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCerrarSesionActionPerformed
+        if(JOptionPane.showOptionDialog(null, "¿Quieres cerrar sesión?", "Cerrar sesión", JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"SI","ñao"}, "Cerrar sesión")==0){
+            File fichero = new File("Archivo/login.dat");
+            if (fichero.delete()) System.out.println("El fichero ha sido borrado satisfactoriamente");
+            else System.out.println("El fichero no puede ser borrado");
+            this.dispose();
+            System.exit(0);
+        }
+        else{
+            System.out.println("No hay inicio de sesión");
+        }
+    }//GEN-LAST:event_botonCerrarSesionActionPerformed
+
+    /**
+     * Este método crea un objeto del tipo JTable dentro de un panel con barras
+     * de deslizamiento y la despliega
+     *
+     * @param tabla objeto TableModel con los datos de una tabla
+     */
+    public void despliegaTablaCorreos(Tabla tabla) {
+        JTable jtabla = new javax.swing.JTable(tabla.getModeloTabla());
+
+        jtabla.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        jtabla.setOpaque(false);
+        ((DefaultTableCellRenderer)jtabla.getDefaultRenderer(Object.class)).setOpaque(false);
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer cellRenderer2 = new DefaultTableCellRenderer();
+        cellRenderer.setHorizontalAlignment( JLabel.CENTER );
+        cellRenderer.setOpaque(false);
+        cellRenderer2.setBackground(new Color(0, 102, 204));
+        cellRenderer2.setHorizontalAlignment( JLabel.CENTER );
+        
+        for(int i=0; i<5; i++){
+            TableColumn column = jtabla.getTableHeader().getColumnModel().getColumn(i);
+            column.setHeaderRenderer(cellRenderer2);
+            jtabla.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);
+        }
+        
+        jtabla.getTableHeader().setForeground(Color.white);
+        jtabla.setForeground(Color.white);
+        jtabla.setRowSelectionAllowed(true);
+        jtabla.setFocusable(true);
+        jtabla.setRequestFocusEnabled(true);
+        jtabla.setUpdateSelectionOnSort(true);
+        jtabla.setVerifyInputWhenFocusTarget(true);
+        jtabla.setRowHeight(30);
+        jtabla.getTableHeader().setResizingAllowed(false);
+        jtabla.getTableHeader().setReorderingAllowed(false);
+                
+        tablaCorreos = jtabla;
+        bandejaEntrada.setViewportView(jtabla);
+        int i = jtabla.getSelectedRow();
+        I = String.valueOf(i);
+    }
+    
+    public void despliegaTablaUsuarios(Tabla tabla) {
+        JTable jtabla = new javax.swing.JTable(tabla.getModeloTabla());
+        
+        jtabla.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        jtabla.setOpaque(false);
+        ((DefaultTableCellRenderer)jtabla.getDefaultRenderer(Object.class)).setOpaque(false);
+        DefaultTableCellRenderer cellRenderer = new DefaultTableCellRenderer();
+        DefaultTableCellRenderer cellRenderer2 = new DefaultTableCellRenderer();
+        cellRenderer.setHorizontalAlignment( JLabel.CENTER );
+        cellRenderer.setOpaque(false);
+        cellRenderer2.setBackground(new Color(0, 102, 204));
+        cellRenderer2.setHorizontalAlignment( JLabel.CENTER );
+        
+        for(int i=0; i<2; i++){
+            TableColumn column = jtabla.getTableHeader().getColumnModel().getColumn(i);
+            column.setHeaderRenderer(cellRenderer2);
+            jtabla.getColumnModel().getColumn(i).setCellRenderer(cellRenderer);   
+        }
+        
+        jtabla.getTableHeader().setForeground(Color.white);
+        jtabla.setForeground(Color.white);
+        jtabla.setRowSelectionAllowed(true);
+        jtabla.setFocusable(true);
+        jtabla.setRequestFocusEnabled(true);
+        jtabla.setUpdateSelectionOnSort(true);
+        jtabla.setVerifyInputWhenFocusTarget(true);
+        jtabla.setRowHeight(30);
+        jtabla.getTableHeader().setResizingAllowed(false);
+        jtabla.getTableHeader().setReorderingAllowed(false);
+
+        tablaUsuarios = jtabla;
+        panelContactos.setViewportView(jtabla);
+        int i = jtabla.getSelectedRow();
+        U = String.valueOf(i);
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel ad;
+    private javax.swing.JScrollPane bandejaEntrada;
+    private javax.swing.JButton botonAbrir;
+    private javax.swing.JButton botonBuscar;
+    private javax.swing.JButton botonCerrarSesion;
+    private javax.swing.JButton botonEliminar;
+    private javax.swing.JButton botonGuardar;
+    private javax.swing.JButton botonInicio;
+    private javax.swing.JButton botonNuevo;
+    private javax.swing.JTextField campoBuscar;
+    private javax.swing.JComboBox<String> comboPerfil;
+    private javax.swing.JLabel correoU;
+    private javax.swing.JLabel fondo;
+    private javax.swing.JLabel fotoPerfil;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JLabel nombreUsuario;
+    private javax.swing.JScrollPane panelContactos;
+    // End of variables declaration//GEN-END:variables
+
+}
